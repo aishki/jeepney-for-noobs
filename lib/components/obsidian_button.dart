@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 
 class ObsidianButton extends StatelessWidget {
   final Function()? onTap;
+  final String text;
+  final Color color;
 
-  const ObsidianButton({super.key, required this.onTap});
+  const ObsidianButton({
+    super.key,
+    required this.onTap,
+    required this.text,
+    this.color = const Color(0xFF000113),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +20,13 @@ class ObsidianButton extends StatelessWidget {
         height: 40,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Color(0xFF000113),
+          color: color,
           borderRadius: BorderRadius.circular(4),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Log In',
-            style: TextStyle(
+            text,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
               fontFamily: 'Roboto',

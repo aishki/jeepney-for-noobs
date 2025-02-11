@@ -2,20 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:jeepneyfornoobs_flutter/components/obsidian_button.dart';
 import 'package:jeepneyfornoobs_flutter/components/square_tile.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
-  //log user in method
+  @override
+  LoginScreenState createState() => LoginScreenState();
+}
+
+class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
+  bool _isKeyboardVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding
+        .instance.platformDispatcher.views.first.viewInsets.bottom;
+    setState(() {
+      _isKeyboardVisible = bottomInset > 0.0;
+    });
+  }
+
   void logUserIn() {
-    // //show loading thing
-    // showDialog(
-    //   context: context,
-    //   builder: (context) {
-    //     return const Center(
-    //       child: CircularProgressIndicator(),
-    //     );
-    //   },
-    // );
+    // Log in logic here
   }
 
   @override
@@ -23,14 +42,24 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
+          // Background color
           Positioned.fill(
+            child: Container(
+              color: Colors.white,
+            ),
+          ),
+          // Triangle overlay image
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 170),
+            top: _isKeyboardVisible ? -80 : -40,
+            left: 0,
+            right: 0,
             child: Image.asset(
-              'lib/assets/login_bg.png',
+              'lib/assets/triangle-overlay.png',
               fit: BoxFit.cover,
             ),
           ),
-          // Foreground content`
+          // Foreground content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Center(
@@ -38,14 +67,11 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-
-                  //Log in Text
                   children: [
                     SizedBox(height: 230),
-
                     Center(
                       child: Text(
-                        'Login',
+                        'Log In',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -53,8 +79,6 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 20),
-
-                    //Email and Password TextFields
                     TextField(
                       decoration: InputDecoration(
                         labelText: 'Email',
@@ -84,8 +108,6 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 10),
-
-                    //Forgot Password Text
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
@@ -97,9 +119,9 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 30),
-
-                    //Login Button
                     ObsidianButton(
+                      color: Color(0xFF000113),
+                      text: 'Log In',
                       onTap: logUserIn,
                     ),
 
@@ -120,11 +142,12 @@ class LoginScreen extends StatelessWidget {
                             child: Text(
                               'Or continue with',
                               style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 14,
-                                  fontFamily: 'Roboto',
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.43),
+                                color: Colors.grey[700],
+                                fontSize: 14,
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.w400,
+                                height: 1.43,
+                              ),
                             ),
                           ),
                           Expanded(

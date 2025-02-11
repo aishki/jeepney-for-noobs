@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:jeepneyfornoobs_flutter/components/obsidian_button.dart';
 import 'package:jeepneyfornoobs_flutter/components/square_tile.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  //log user in method
+  void logUserIn() {
+    // //show loading thing
+    // showDialog(
+    //   context: context,
+    //   builder: (context) {
+    //     return const Center(
+    //       child: CircularProgressIndicator(),
+    //     );
+    //   },
+    // );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +30,7 @@ class LoginScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-          // Foreground content
+          // Foreground content`
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Center(
@@ -85,31 +99,41 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(height: 30),
 
                     //Login Button
-                    Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: ShapeDecoration(
-                        color: Color(0xFF000113),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Log In',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: 'Roboto',
-                            fontWeight: FontWeight.w500,
-                            height: 1.43,
-                          ),
-                        ),
-                      ),
+                    ObsidianButton(
+                      onTap: logUserIn,
                     ),
+
                     SizedBox(height: 50),
 
                     //Or continue with Text
-                    Center(child: Text('Or continue with')),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                                thickness: 0.5, color: Colors.grey[400]),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text(
+                              'Or continue with',
+                              style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 14,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.43),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                                thickness: 0.5, color: Colors.grey[400]),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 15),
 
                     //Google and Apple Buttons

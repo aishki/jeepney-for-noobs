@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jeepneyfornoobs_flutter/components/obsidian_button.dart';
 import 'package:jeepneyfornoobs_flutter/components/square_tile.dart';
+import 'package:jeepneyfornoobs_flutter/services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,12 +20,6 @@ class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   void didChangeMetrics() {
     final bottomInset = WidgetsBinding
         .instance.platformDispatcher.views.first.viewInsets.bottom;
@@ -33,8 +28,41 @@ class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     });
   }
 
-  void logUserIn() {
-    // Log in logic here
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void logUserIn() async {
+    String uname = _usernameController.text.trim();
+    String upass = _passwordController.text.trim();
+
+    if (uname.isEmpty || upass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please enter all fields")),
+      );
+      return;
+    }
+
+    Map<String, dynamic> response = await ApiService.loginUser(uname, upass);
+
+    if (response['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text("Login Successful! Welcome ${response['user']['NAME']}")),
+      );
+      // Navigate to Home Screen or Dashboard
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['message'])),
+      );
+    }
   }
 
   @override

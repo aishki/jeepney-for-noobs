@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "jeepneyfornoobs_flutter",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "jeepneyfornoobs_flutter (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "jeepneyfornoobs_flutter (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "deviceId": "emulator-5554"
+    }
+  ]
+}

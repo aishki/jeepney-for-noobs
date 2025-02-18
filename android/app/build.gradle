@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.jeepneyfornoobs_flutter"
+    namespace "com.example.jeepneyfornoobs_flutter"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

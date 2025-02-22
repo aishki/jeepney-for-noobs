@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jeepneyfornoobs_flutter/components/obsidian_button.dart';
 import 'package:jeepneyfornoobs_flutter/components/square_tile.dart';
+import 'package:jeepneyfornoobs_flutter/screens/maps_screen.dart';
 import 'package:jeepneyfornoobs_flutter/services/api_service.dart';
+
+// testuser@example.com
+// password123
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   bool _isKeyboardVisible = false;
+  bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -39,25 +45,36 @@ class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   }
 
   void logUserIn() async {
-    String uname = _usernameController.text.trim();
-    String upass = _passwordController.text.trim();
-
-    if (uname.isEmpty || upass.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter all fields")),
-      );
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
+    String uname = _usernameController.text.trim();
+    String upass = _passwordController.text.trim();
+
     Map<String, dynamic> response = await ApiService.loginUser(uname, upass);
+
+    setState(() {
+      _isLoading = false;
+    });
 
     if (response['success']) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content:
-                Text("Login Successful! Welcome ${response['user']['NAME']}")),
+          content:
+              Text("Login Successful! Welcome ${response['user']['NAME']}"),
+        ),
       );
-      // Navigate to Home Screen or Dashboard
+
+      // Navigate to Home Screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MapsScreen()),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response['message'])),
@@ -87,146 +104,175 @@ class LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
               fit: BoxFit.cover,
             ),
           ),
+
           // Foreground content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Center(
               child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 230),
-                    Center(
-                      child: Text(
-                        'Log In',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        labelStyle: TextStyle(
-                          color: Color(0xFF898A8D),
-                          fontSize: 14,
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.w400,
-                          height: 1.43,
-                        ),
-                        border: UnderlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: TextStyle(
-                          color: Color(0xFF898A8D),
-                          fontSize: 14,
-                          fontFamily: 'Roboto',
-                          fontWeight: FontWeight.w400,
-                          height: 1.43,
-                        ),
-                        border: UnderlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Forgot?',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    ObsidianButton(
-                      color: Color(0xFF000113),
-                      text: 'Log In',
-                      onTap: logUserIn,
-                    ),
-
-                    SizedBox(height: 50),
-
-                    //Or continue with Text
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                                thickness: 0.5, color: Colors.grey[400]),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 230),
+                      Center(
+                        child: Text(
+                          'Log In',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                              'Or continue with',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w400,
-                                height: 1.43,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // Email and Password Fields
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          labelStyle: TextStyle(
+                            color: Color(0xFF898A8D),
+                            fontSize: 14,
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w400,
+                            height: 1.43,
+                          ),
+                          border: UnderlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 5),
+
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          labelStyle: TextStyle(
+                            color: Color(0xFF898A8D),
+                            fontSize: 14,
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w400,
+                            height: 1.43,
+                          ),
+                          border: UnderlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 10),
+
+                      // Forgot Password Text
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Forgot?',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 30),
+
+                      // Log In Button
+                      _isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : ObsidianButton(
+                              color: Color(0xFF000113),
+                              text: 'Log In',
+                              onTap: logUserIn,
+                            ),
+                      SizedBox(height: 50),
+
+                      //Or continue with Text
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                  thickness: 0.5, color: Colors.grey[400]),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                'Or continue with',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 14,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.43,
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                                thickness: 0.5, color: Colors.grey[400]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 15),
-
-                    //Google and Apple Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: SquareTile(
-                            imagePath: 'lib/assets/google_logo.png',
-                            label: 'Google',
-                          ),
-                        ),
-                        SizedBox(width: 13),
-                        Expanded(
-                          child: SquareTile(
-                            imagePath: 'lib/assets/apple.png',
-                            label: 'Apple',
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-
-                    //Create Account Text
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(color: Colors.black),
-                          children: [
-                            TextSpan(text: 'Don’t have an account? '),
-                            TextSpan(
-                              text: 'Create now',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Expanded(
+                              child: Divider(
+                                  thickness: 0.5, color: Colors.grey[400]),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 15),
+
+                      //Google and Apple Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: SquareTile(
+                              imagePath: 'lib/assets/google_logo.png',
+                              label: 'Google',
+                            ),
+                          ),
+                          SizedBox(width: 13),
+                          Expanded(
+                            child: SquareTile(
+                              imagePath: 'lib/assets/apple.png',
+                              label: 'Apple',
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+
+                      //Create Account Text
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(color: Colors.black),
+                            children: [
+                              TextSpan(text: 'Don’t have an account? '),
+                              TextSpan(
+                                text: 'Create now',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
